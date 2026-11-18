@@ -1,18 +1,19 @@
 <div class="page">
-  <h1>Brokers</h1>
+  <div class="page-header">
+    <h1>Brokers</h1>
+    <span class="subtle" *ngIf="brokers().length">
+      <strong>{{ totalAssignments() }}</strong> assignments across {{ brokers().length }} broker(s)
+    </span>
+  </div>
 
-  <p *ngIf="brokers().length">
-    <strong>{{ totalAssignments() }}</strong> assignments total across {{ brokers().length }} broker(s).
-  </p>
-
-  <p>
-    <button (click)="startCreate()">Add broker</button>
+  <div class="toolbar">
+    <button (click)="startCreate()">+ Add broker</button>
     <button [disabled]="scanningAll()" (click)="scanAll()">
       {{ scanningAll() ? 'Scanning all...' : 'Scan all now' }}
     </button>
-  </p>
+  </div>
 
-  <form *ngIf="showForm()" (ngSubmit)="submitForm()" class="broker-form">
+  <form *ngIf="showForm()" (ngSubmit)="submitForm()" class="broker-form card" style="margin-bottom: 1.25rem;">
     <label>
       Name
       <input type="text" name="name" [(ngModel)]="form.name" required />
@@ -49,8 +50,10 @@
       Login password <span *ngIf="editingId()">(leave blank to keep the current one)</span>
       <input type="password" name="loginPassword" [(ngModel)]="form.loginPassword" />
     </label>
-    <button type="submit">{{ editingId() ? 'Save' : 'Create' }}</button>
-    <button type="button" (click)="cancelForm()">Cancel</button>
+    <div>
+      <button type="submit">{{ editingId() ? 'Save' : 'Create' }}</button>
+      <button type="button" (click)="cancelForm()">Cancel</button>
+    </div>
   </form>
 
   <table *ngIf="brokers().length">
@@ -76,7 +79,7 @@
             <br />
             {{ b.loginUsername }}
             <button type="button" (click)="toggleRevealPassword(b)">
-              {{ isPasswordRevealed(b) ? 'Hide password' : 'Show password' }}
+              {{ isPasswordRevealed(b) ? 'Hide' : 'Show password' }}
             </button>
             <ng-container *ngIf="isPasswordRevealed(b)">
               <code>{{ revealedPassword(b) }}</code>
@@ -87,9 +90,9 @@
           </ng-container>
         </td>
         <td [title]="b.lastScanError ?? ''">
-          <span *ngIf="b.lastScanSucceeded === true">✅ OK</span>
-          <span *ngIf="b.lastScanSucceeded === false">❌ Failing</span>
-          <span *ngIf="b.lastScanSucceeded === null">— Not scanned yet</span>
+          <span class="badge badge-success" *ngIf="b.lastScanSucceeded === true">OK</span>
+          <span class="badge badge-danger" *ngIf="b.lastScanSucceeded === false">Failing</span>
+          <span class="badge badge-neutral" *ngIf="b.lastScanSucceeded === null">Not scanned</span>
         </td>
         <td>{{ b.lastScrapedAt ? (b.lastScrapedAt | date: 'short') : 'never' }}</td>
         <td>{{ b.assignmentCount }}</td>
@@ -106,5 +109,5 @@
       </tr>
     </tbody>
   </table>
-  <p *ngIf="!brokers().length">No brokers configured yet.</p>
+  <p class="subtle" *ngIf="!brokers().length">No brokers configured yet.</p>
 </div>

@@ -1,11 +1,20 @@
 <div class="page">
-  <h1>Assignments ({{ totalCount() }})</h1>
+  <div class="page-header">
+    <h1>Assignments</h1>
+    <span class="subtle">{{ totalCount() }} total</span>
+  </div>
 
-  <form (ngSubmit)="refresh()" class="filters">
-    <input type="text" placeholder="Search title/description/skills" [(ngModel)]="query" name="query" />
-    <input type="text" placeholder="Area" [(ngModel)]="area" name="area" />
+  <form (ngSubmit)="onFilterChange()" class="filters">
     <label>
-      <input type="checkbox" [(ngModel)]="onlyInteresting" name="onlyInteresting" (change)="refresh()" />
+      Search
+      <input type="text" placeholder="Title, description, skills" [(ngModel)]="query" name="query" />
+    </label>
+    <label>
+      Area
+      <input type="text" placeholder="e.g. Stockholm" [(ngModel)]="area" name="area" />
+    </label>
+    <label>
+      <input type="checkbox" [(ngModel)]="onlyInteresting" name="onlyInteresting" (change)="onFilterChange()" />
       Interesting only
     </label>
     <button type="submit">Filter</button>
@@ -35,5 +44,7 @@
       </tr>
     </tbody>
   </table>
-  <p *ngIf="!assignments().length">No assignments found.</p>
+  <p class="subtle" *ngIf="!assignments().length">No assignments found.</p>
+
+  <app-pagination [page]="page()" [pageSize]="pageSize" [totalCount]="totalCount()" (pageChange)="goToPage($event)" />
 </div>

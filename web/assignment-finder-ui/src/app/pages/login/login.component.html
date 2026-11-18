@@ -1,16 +1,18 @@
-<div class="page">
-  <h1>Log in</h1>
-  <form (ngSubmit)="submit()">
-    <label>
-      Email
-      <input type="email" name="email" [(ngModel)]="email" required />
-    </label>
-    <label>
-      Password
-      <input type="password" name="password" [(ngModel)]="password" required />
-    </label>
-    <p class="error" *ngIf="error()">{{ error() }}</p>
-    <button type="submit">Log in</button>
-  </form>
-  <p>No account? <a routerLink="/register">Register</a></p>
+<div class="auth-page">
+  <div class="card">
+    <h1>Log in</h1>
+    <form (ngSubmit)="submit()">
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="email" required />
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" [(ngModel)]="password" required />
+      </label>
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+      <button type="submit">Log in</button>
+    </form>
+    <p class="subtle">No account? <a routerLink="/register">Register</a></p>
+  </div>
 </div>

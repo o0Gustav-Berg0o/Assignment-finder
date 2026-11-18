@@ -1,10 +1,15 @@
 <div class="page">
-  <h1>Matches ({{ totalCount() }})</h1>
+  <div class="page-header">
+    <h1>Matches</h1>
+    <span class="subtle">{{ totalCount() }} total</span>
+  </div>
 
-  <label>
-    <input type="checkbox" [(ngModel)]="unseenOnly" (change)="refresh()" />
-    Unseen only
-  </label>
+  <div class="toolbar">
+    <label>
+      <input type="checkbox" [(ngModel)]="unseenOnly" (change)="onFilterChange()" />
+      Unseen only
+    </label>
+  </div>
 
   <table *ngIf="matches().length">
     <thead>
@@ -30,5 +35,7 @@
       </tr>
     </tbody>
   </table>
-  <p *ngIf="!matches().length">No matches yet.</p>
+  <p class="subtle" *ngIf="!matches().length">No matches yet.</p>
+
+  <app-pagination [page]="page()" [pageSize]="pageSize" [totalCount]="totalCount()" (pageChange)="goToPage($event)" />
 </div>

@@ -1,9 +1,9 @@
 <nav *ngIf="auth.isLoggedIn()">
-  <a routerLink="/matches">Matches</a>
-  <a routerLink="/assignments">Assignments</a>
-  <a routerLink="/criteria">Criteria</a>
-  <a *ngIf="auth.isAdmin()" routerLink="/brokers">Brokers</a>
-  <a *ngIf="auth.isAdmin()" routerLink="/admin">Users</a>
+  <a routerLink="/matches" routerLinkActive="active">Matches</a>
+  <a routerLink="/assignments" routerLinkActive="active">Assignments</a>
+  <a routerLink="/criteria" routerLinkActive="active">Criteria</a>
+  <a *ngIf="auth.isAdmin()" routerLink="/brokers" routerLinkActive="active">Brokers</a>
+  <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="active">Users</a>
   <button (click)="logout()">Log out</button>
 </nav>
 

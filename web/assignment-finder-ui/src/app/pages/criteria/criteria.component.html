@@ -1,5 +1,7 @@
 <div class="page">
-  <h1>My criteria</h1>
+  <div class="page-header">
+    <h1>My criteria</h1>
+  </div>
 
   <table *ngIf="criteria().length">
     <thead>
@@ -25,10 +27,10 @@
       </tr>
     </tbody>
   </table>
-  <p *ngIf="!criteria().length">No search criteria yet - add one below.</p>
+  <p class="subtle" *ngIf="!criteria().length">No search criteria yet - add one below.</p>
 
   <h2>Add criterion</h2>
-  <form (ngSubmit)="add()">
+  <form (ngSubmit)="add()" class="card">
     <label>
       Name
       <input name="name" [(ngModel)]="newName" required />
