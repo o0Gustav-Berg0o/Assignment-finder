@@ -52,8 +52,8 @@ public class AdminSeeder(
 
             if (!await userManager.CheckPasswordAsync(admin, adminPassword))
             {
-                var resetToken = await userManager.GeneratePasswordResetTokenAsync(admin);
-                await userManager.ResetPasswordAsync(admin, resetToken, adminPassword);
+                await userManager.RemovePasswordAsync(admin);
+                await userManager.AddPasswordAsync(admin, adminPassword);
             }
         }
 
