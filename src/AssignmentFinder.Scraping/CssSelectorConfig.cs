@@ -25,4 +25,21 @@ public record CssSelectorConfig
 
     /// <summary>Optional selector (within an item) for a short description/summary text.</summary>
     public string? DescriptionSelector { get; init; }
+
+    /// <summary>
+    /// When set, the connector follows each item's link to its own detail page (one extra request
+    /// per assignment, politely spaced by DetailFetchDelayMs) and extracts DetailDescriptionSelector/
+    /// DetailSkillsSelector from THAT page instead of the list page - for brokers whose list page is
+    /// just a teaser (title/area) but whose detail page is itself public and has the full text.
+    /// </summary>
+    public bool FetchDetailPage { get; init; }
+
+    /// <summary>Selector resolved against the whole detail page document for the full description.</summary>
+    public string? DetailDescriptionSelector { get; init; }
+
+    /// <summary>Selector resolved against the whole detail page document for skills/requirements.</summary>
+    public string? DetailSkillsSelector { get; init; }
+
+    /// <summary>Delay before each detail-page request, to avoid hammering the broker's server. Default 300ms.</summary>
+    public int? DetailFetchDelayMs { get; init; }
 }

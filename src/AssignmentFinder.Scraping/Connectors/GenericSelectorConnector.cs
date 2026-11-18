@@ -17,7 +17,48 @@ public class GenericSelectorConnector(IHttpClientFactory httpClientFactory) : Ht
 
     public override string Key => ConnectorKey;
 
-    protected override IReadOnlyList<ScrapedAssignment> Parse(Broker broker, IDocument document)
+    public override async Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, CancellationToken ct)
+    {
+        var listResults = await base.FetchAsync(broker, ct);
+
+        var config = GetConfig(broker);
+        if (!config.FetchDetailPage ||
+            (string.IsNullOrWhiteSpace(config.DetailDescriptionSelector) && string.IsNullOrWhiteSpace(config.DetailSkillsSelector)))
+        {
+            return listResults;
+        }
+
+        var enriched = new List<ScrapedAssignment>(listResults.Count);
+        foreach (var item in listResults)
+        {
+            await Task.Delay(config.DetailFetchDelayMs ?? 300, ct);
+
+            try
+            {
+                var detailHtml = await httpClient.GetStringAsync(item.Url, ct);
+                var detailDocument = await ParseHtmlAsync(detailHtml, ct);
+
+                var description = GetOptionalText(detailDocument.DocumentElement, config.DetailDescriptionSelector);
+                var skills = GetOptionalText(detailDocument.DocumentElement, config.DetailSkillsSelector);
+
+                enriched.Add(item with
+                {
+                    Description = description ?? item.Description,
+                    Skills = skills ?? item.Skills,
+                });
+            }
+            catch
+            {
+                // Keep the list-page data for this one item rather than failing the whole scan
+                // over a single broken/unreachable detail page.
+                enriched.Add(item);
+            }
+        }
+
+        return enriched;
+    }
+
+    private static CssSelectorConfig GetConfig(Broker broker)
     {
         if (string.IsNullOrWhiteSpace(broker.SelectorConfigJson))
         {
@@ -25,8 +66,13 @@ public class GenericSelectorConnector(IHttpClientFactory httpClientFactory) : Ht
                 $"Broker '{broker.Name}' uses the generic-selector connector but has no SelectorConfigJson configured.");
         }
 
-        var config = JsonSerializer.Deserialize<CssSelectorConfig>(broker.SelectorConfigJson)
+        return JsonSerializer.Deserialize<CssSelectorConfig>(broker.SelectorConfigJson)
             ?? throw new InvalidOperationException($"Could not parse SelectorConfigJson for broker '{broker.Name}'.");
+    }
+
+    protected override IReadOnlyList<ScrapedAssignment> Parse(Broker broker, IDocument document)
+    {
+        var config = GetConfig(broker);
 
         var results = new List<ScrapedAssignment>();
 

@@ -42,6 +42,8 @@ public class BrokerSeeder(AppDbContext db)
                 TitleSelector = "a.list__heading",
                 LinkSelector = "a.list__heading",
                 AreaSelector = ".focus__item:has(use[href='#icon-map-pin']) p",
+                FetchDetailPage = true,
+                DetailDescriptionSelector = "article.split__left .wysiwyg",
             }),
         },
     ];
