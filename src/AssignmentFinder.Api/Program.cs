@@ -1,5 +1,6 @@
 using AssignmentFinder.Infrastructure;
 using AssignmentFinder.Infrastructure.Data;
+using AssignmentFinder.Infrastructure.Identity;
 using AssignmentFinder.Scraping;
 using FastEndpoints;
 using FastEndpoints.Security;
@@ -28,6 +29,9 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+
+    var adminSeeder = scope.ServiceProvider.GetRequiredService<AdminSeeder>();
+    await adminSeeder.SeedAsync();
 }
 
 app.UseAuthentication();

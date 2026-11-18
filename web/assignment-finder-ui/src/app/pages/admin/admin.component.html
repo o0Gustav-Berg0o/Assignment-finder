@@ -1,0 +1,24 @@
+<div class="page">
+  <h1>Users</h1>
+
+  <table *ngIf="users().length">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of users()">
+        <td>{{ u.email }}</td>
+        <td>{{ u.isApproved ? 'Approved' : 'Pending' }}</td>
+        <td>
+          <button *ngIf="!u.isApproved" (click)="approve(u)">Approve</button>
+          <button *ngIf="!u.isApproved" (click)="reject(u)">Reject</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!users().length">No users yet.</p>
+</div>

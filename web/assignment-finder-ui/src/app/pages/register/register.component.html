@@ -1,16 +1,23 @@
 <div class="page">
   <h1>Register</h1>
-  <form (ngSubmit)="submit()">
-    <label>
-      Email
-      <input type="email" name="email" [(ngModel)]="email" required />
-    </label>
-    <label>
-      Password
-      <input type="password" name="password" [(ngModel)]="password" required minlength="8" />
-    </label>
-    <p class="error" *ngIf="error()">{{ error() }}</p>
-    <button type="submit">Register</button>
-  </form>
-  <p>Already have an account? <a routerLink="/login">Log in</a></p>
+
+  <ng-container *ngIf="!submitted()">
+    <form (ngSubmit)="submit()">
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="email" required />
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" [(ngModel)]="password" required minlength="8" />
+      </label>
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a routerLink="/login">Log in</a></p>
+  </ng-container>
+
+  <p *ngIf="submitted()">
+    Thanks! Your account is pending administrator approval. You'll be able to log in once it's approved.
+  </p>
 </div>

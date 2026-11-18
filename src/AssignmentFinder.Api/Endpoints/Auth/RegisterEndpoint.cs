@@ -7,7 +7,7 @@ namespace AssignmentFinder.Api.Endpoints.Auth;
 
 public record RegisterRequest(string Email, string Password);
 
-public record RegisterResponse(string UserId, string Email);
+public record RegisterResponse(string UserId, string Email, bool IsApproved);
 
 public class RegisterRequestValidator : Validator<RegisterRequest>
 {
@@ -28,7 +28,9 @@ public class RegisterEndpoint(UserManager<ApplicationUser> userManager) : Endpoi
 
     public override async Task HandleAsync(RegisterRequest req, CancellationToken ct)
     {
-        var user = new ApplicationUser { UserName = req.Email, Email = req.Email };
+        // New self-registrations are never auto-approved; an admin must approve them before
+        // they can log in. The bootstrap admin account is seeded separately (see AdminSeeder).
+        var user = new ApplicationUser { UserName = req.Email, Email = req.Email, IsApproved = false };
         var result = await userManager.CreateAsync(user, req.Password);
 
         if (!result.Succeeded)
@@ -40,6 +42,7 @@ public class RegisterEndpoint(UserManager<ApplicationUser> userManager) : Endpoi
             ThrowIfAnyErrors();
         }
 
-        await HttpContext.Response.SendOkAsync(new RegisterResponse(user.Id, user.Email!), null, ct);
+        await HttpContext.Response.SendOkAsync(
+            new RegisterResponse(user.Id, user.Email!, user.IsApproved), null, ct);
     }
 }

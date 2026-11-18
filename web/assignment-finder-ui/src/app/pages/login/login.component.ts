@@ -1,8 +1,21 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+
+function extractErrorMessage(err: HttpErrorResponse): string {
+  const errors = err.error?.errors;
+  if (errors) {
+    const firstKey = Object.keys(errors)[0];
+    const firstMessage = firstKey ? errors[firstKey]?.[0] : null;
+    if (firstMessage) {
+      return firstMessage;
+    }
+  }
+  return 'Invalid email or password.';
+}
 
 @Component({
   selector: 'app-login',
@@ -24,7 +37,7 @@ export class LoginComponent {
     this.error.set(null);
     this.auth.login(this.email, this.password).subscribe({
       next: () => this.router.navigateByUrl('/matches'),
-      error: () => this.error.set('Invalid email or password.'),
+      error: (err: HttpErrorResponse) => this.error.set(extractErrorMessage(err)),
     });
   }
 }

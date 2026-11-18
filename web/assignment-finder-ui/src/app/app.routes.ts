@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/admin.guard';
 import { authGuard } from './core/auth.guard';
+import { AdminComponent } from './pages/admin/admin.component';
 import { BrokersComponent } from './pages/brokers/brokers.component';
 import { CriteriaComponent } from './pages/criteria/criteria.component';
 import { LoginComponent } from './pages/login/login.component';
@@ -13,4 +15,5 @@ export const routes: Routes = [
   { path: 'matches', component: MatchesComponent, canActivate: [authGuard] },
   { path: 'criteria', component: CriteriaComponent, canActivate: [authGuard] },
   { path: 'brokers', component: BrokersComponent, canActivate: [authGuard] },
+  { path: 'admin', component: AdminComponent, canActivate: [authGuard, adminGuard] },
 ];

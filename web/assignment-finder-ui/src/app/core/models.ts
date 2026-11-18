@@ -33,3 +33,9 @@ export interface MatchesPage {
   items: MatchItem[];
   totalCount: number;
 }
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  isApproved: boolean;
+}

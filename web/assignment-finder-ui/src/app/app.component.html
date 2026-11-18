@@ -2,6 +2,7 @@
   <a routerLink="/matches">Matches</a>
   <a routerLink="/criteria">Criteria</a>
   <a routerLink="/brokers">Brokers</a>
+  <a *ngIf="auth.isAdmin()" routerLink="/admin">Users</a>
   <button (click)="logout()">Log out</button>
 </nav>
 

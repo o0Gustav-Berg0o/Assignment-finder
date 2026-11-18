@@ -38,6 +38,15 @@ public class LoginEndpoint(UserManager<ApplicationUser> userManager, IConfigurat
             return;
         }
 
+        if (!user.IsApproved)
+        {
+            AddError("Your account is pending administrator approval.");
+            ThrowIfAnyErrors();
+            return;
+        }
+
+        var roles = await userManager.GetRolesAsync(user);
+
         var signingKey = configuration["Jwt:SigningKey"]
             ?? throw new InvalidOperationException("Jwt:SigningKey is not configured.");
 
@@ -47,6 +56,7 @@ public class LoginEndpoint(UserManager<ApplicationUser> userManager, IConfigurat
             o.ExpireAt = DateTime.UtcNow.AddDays(7);
             o.User.Claims.Add(new("sub", user.Id));
             o.User.Claims.Add(new("email", user.Email!));
+            o.User.Roles.AddRange(roles);
         });
 
         await HttpContext.Response.SendOkAsync(new LoginResponse(token), null, ct);
