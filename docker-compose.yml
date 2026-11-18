@@ -55,7 +55,7 @@ services:
     depends_on:
       - api
     ports:
-      - "8081:80"
+      - "4310:80"
 
 volumes:
   db-data:
