@@ -1,12 +1,18 @@
 <div class="page">
   <h1>Brokers</h1>
 
+  <p *ngIf="brokers().length">
+    <strong>{{ totalAssignments() }}</strong> assignments total across {{ brokers().length }} broker(s).
+  </p>
+
   <table *ngIf="brokers().length">
     <thead>
       <tr>
         <th>Name</th>
         <th>Connector</th>
+        <th>Status</th>
         <th>Last scraped</th>
+        <th>Assignments</th>
         <th>Enabled</th>
         <th></th>
       </tr>
@@ -15,7 +21,13 @@
       <tr *ngFor="let b of brokers()">
         <td><a [href]="b.websiteUrl" target="_blank" rel="noopener">{{ b.name }}</a></td>
         <td>{{ b.connectorKey }}</td>
+        <td [title]="b.lastScanError ?? ''">
+          <span *ngIf="b.lastScanSucceeded === true">✅ OK</span>
+          <span *ngIf="b.lastScanSucceeded === false">❌ Failing</span>
+          <span *ngIf="b.lastScanSucceeded === null">— Not scanned yet</span>
+        </td>
         <td>{{ b.lastScrapedAt ? (b.lastScrapedAt | date: 'short') : 'never' }}</td>
+        <td>{{ b.assignmentCount }}</td>
         <td>
           <input type="checkbox" [checked]="b.isEnabled" (change)="toggleEnabled(b)" />
         </td>

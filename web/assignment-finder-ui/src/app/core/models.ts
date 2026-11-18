@@ -15,6 +15,9 @@ export interface Broker {
   connectorKey: string;
   isEnabled: boolean;
   lastScrapedAt: string | null;
+  lastScanSucceeded: boolean | null;
+  lastScanError: string | null;
+  assignmentCount: number;
 }
 
 export interface MatchItem {

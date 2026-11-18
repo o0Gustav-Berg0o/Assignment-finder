@@ -52,10 +52,16 @@ public class ScanPipeline(
         try
         {
             scraped = await connector.FetchAsync(broker, ct);
+            broker.LastScanSucceeded = true;
+            broker.LastScanError = null;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed scraping broker '{Broker}'", broker.Name);
+            broker.LastScanSucceeded = false;
+            broker.LastScanError = ex.Message;
+            broker.LastScrapedAt = DateTimeOffset.UtcNow;
+            await db.SaveChangesAsync(ct);
             return [];
         }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { BrokersService } from '../../core/brokers.service';
 import { Broker } from '../../core/models';
 
@@ -12,6 +12,9 @@ import { Broker } from '../../core/models';
 export class BrokersComponent implements OnInit {
   readonly brokers = signal<Broker[]>([]);
   readonly scanningId = signal<number | null>(null);
+  readonly totalAssignments = computed(() =>
+    this.brokers().reduce((sum, b) => sum + b.assignmentCount, 0),
+  );
 
   constructor(private readonly brokersService: BrokersService) {}
 

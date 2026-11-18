@@ -89,6 +89,12 @@ namespace AssignmentFinder.Infrastructure.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LastScanError")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("LastScanSucceeded")
+                        .HasColumnType("bit");
+
                     b.Property<DateTimeOffset?>("LastScrapedAt")
                         .HasColumnType("datetimeoffset");
 

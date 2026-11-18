@@ -6,7 +6,8 @@ namespace AssignmentFinder.Api.Endpoints.Brokers;
 
 public record BrokerResponse(
     int Id, string Name, string WebsiteUrl, string? AssignmentPortalUrl,
-    string ConnectorKey, bool IsEnabled, DateTimeOffset? LastScrapedAt);
+    string ConnectorKey, bool IsEnabled, DateTimeOffset? LastScrapedAt,
+    bool? LastScanSucceeded, string? LastScanError, int AssignmentCount);
 
 public class ListBrokersEndpoint(AppDbContext db) : EndpointWithoutRequest<List<BrokerResponse>>
 {
@@ -19,7 +20,8 @@ public class ListBrokersEndpoint(AppDbContext db) : EndpointWithoutRequest<List<
     {
         var brokers = await db.Brokers
             .Select(b => new BrokerResponse(
-                b.Id, b.Name, b.WebsiteUrl, b.AssignmentPortalUrl, b.ConnectorKey, b.IsEnabled, b.LastScrapedAt))
+                b.Id, b.Name, b.WebsiteUrl, b.AssignmentPortalUrl, b.ConnectorKey, b.IsEnabled,
+                b.LastScrapedAt, b.LastScanSucceeded, b.LastScanError, b.Assignments.Count))
             .ToListAsync(ct);
 
         await HttpContext.Response.SendOkAsync(brokers, null, ct);

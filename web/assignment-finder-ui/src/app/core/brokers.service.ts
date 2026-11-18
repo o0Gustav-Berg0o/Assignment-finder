@@ -15,7 +15,10 @@ export class BrokersService {
     return this.http.post<void>(`/api/brokers/${id}/enabled`, { id, isEnabled });
   }
 
-  scanNow(id: number): Observable<{ newAssignments: number }> {
-    return this.http.post<{ newAssignments: number }>(`/api/brokers/${id}/scan-now`, { id });
+  scanNow(id: number): Observable<{ newAssignments: number; newMatches: number }> {
+    return this.http.post<{ newAssignments: number; newMatches: number }>(
+      `/api/brokers/${id}/scan-now`,
+      { id },
+    );
   }
 }

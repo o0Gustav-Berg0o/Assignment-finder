@@ -20,5 +20,11 @@ public class Broker
     public bool IsEnabled { get; set; } = true;
     public DateTimeOffset? LastScrapedAt { get; set; }
 
+    /// <summary>Whether the most recent scan completed without error. Null before the first scan.</summary>
+    public bool? LastScanSucceeded { get; set; }
+
+    /// <summary>Exception message from the most recent failed scan, if any.</summary>
+    public string? LastScanError { get; set; }
+
     public List<Assignment> Assignments { get; set; } = [];
 }
