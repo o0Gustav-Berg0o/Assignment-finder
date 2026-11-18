@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Broker } from './models';
+import { Broker, UpsertBroker } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class BrokersService {
@@ -9,6 +9,18 @@ export class BrokersService {
 
   list(): Observable<Broker[]> {
     return this.http.get<Broker[]>('/api/brokers');
+  }
+
+  create(broker: UpsertBroker): Observable<Broker> {
+    return this.http.post<Broker>('/api/brokers', broker);
+  }
+
+  update(id: number, broker: UpsertBroker): Observable<Broker> {
+    return this.http.put<Broker>(`/api/brokers/${id}`, { id, ...broker });
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/brokers/${id}`);
   }
 
   setEnabled(id: number, isEnabled: boolean): Observable<void> {
@@ -19,6 +31,13 @@ export class BrokersService {
     return this.http.post<{ newAssignments: number; newMatches: number }>(
       `/api/brokers/${id}/scan-now`,
       { id },
+    );
+  }
+
+  scanAll(): Observable<{ brokersScanned: number; newAssignments: number; newMatches: number }> {
+    return this.http.post<{ brokersScanned: number; newAssignments: number; newMatches: number }>(
+      '/api/brokers/scan-all',
+      {},
     );
   }
 }

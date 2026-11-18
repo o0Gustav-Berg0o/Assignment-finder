@@ -26,5 +26,11 @@ public class Broker
     /// <summary>Exception message from the most recent failed scan, if any.</summary>
     public string? LastScanError { get; set; }
 
+    /// <summary>Username for brokers whose listing requires login. Null if none is needed.</summary>
+    public string? LoginUsername { get; set; }
+
+    /// <summary>Password for LoginUsername, encrypted at rest via BrokerCredentialProtector. Never exposed via the API.</summary>
+    public string? LoginPasswordEncrypted { get; set; }
+
     public List<Assignment> Assignments { get; set; } = [];
 }

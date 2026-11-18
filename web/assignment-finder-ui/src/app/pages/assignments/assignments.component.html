@@ -1,0 +1,39 @@
+<div class="page">
+  <h1>Assignments ({{ totalCount() }})</h1>
+
+  <form (ngSubmit)="refresh()" class="filters">
+    <input type="text" placeholder="Search title/description/skills" [(ngModel)]="query" name="query" />
+    <input type="text" placeholder="Area" [(ngModel)]="area" name="area" />
+    <label>
+      <input type="checkbox" [(ngModel)]="onlyInteresting" name="onlyInteresting" (change)="refresh()" />
+      Interesting only
+    </label>
+    <button type="submit">Filter</button>
+  </form>
+
+  <table *ngIf="assignments().length">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Broker</th>
+        <th>Area</th>
+        <th>First seen</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of assignments()">
+        <td><a [href]="a.url" target="_blank" rel="noopener">{{ a.title }}</a></td>
+        <td>{{ a.brokerName }}</td>
+        <td>{{ a.area }}</td>
+        <td>{{ a.firstSeenAt | date: 'short' }}</td>
+        <td>
+          <button (click)="toggleInteresting(a)">
+            {{ a.isInteresting ? '★ Interesting' : '☆ Mark interesting' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!assignments().length">No assignments found.</p>
+</div>

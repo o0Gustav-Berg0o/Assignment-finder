@@ -2,6 +2,7 @@ using AssignmentFinder.Infrastructure.Data;
 using AssignmentFinder.Infrastructure.Identity;
 using AssignmentFinder.Infrastructure.Matching;
 using AssignmentFinder.Infrastructure.Scanning;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,14 @@ public static class InfrastructureServiceCollectionExtensions
     {
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("Default")));
+
+        // Persisted to the DB (not the container filesystem, which is wiped on every restart/
+        // redeploy) and given a fixed application name so the api and worker containers - which
+        // each run their own process - decrypt data protected by either of them.
+        services.AddDataProtection()
+            .SetApplicationName("AssignmentFinder")
+            .PersistKeysToDbContext<AppDbContext>();
+        services.AddScoped<BrokerCredentialProtector>();
 
         services
             .AddIdentityCore<ApplicationUser>(options =>

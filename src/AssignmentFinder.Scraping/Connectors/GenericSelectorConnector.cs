@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using AngleSharp.Dom;
 using AssignmentFinder.Domain;
 
@@ -39,7 +40,7 @@ public class GenericSelectorConnector(IHttpClientFactory httpClientFactory) : Ht
             }
 
             var url = MakeAbsolute(href, broker);
-            var title = item.QuerySelector(config.TitleSelector)?.TextContent.Trim();
+            var title = NormalizeWhitespace(item.QuerySelector(config.TitleSelector)?.TextContent);
             if (string.IsNullOrWhiteSpace(title))
             {
                 continue;
@@ -58,7 +59,10 @@ public class GenericSelectorConnector(IHttpClientFactory httpClientFactory) : Ht
     }
 
     private static string? GetOptionalText(IElement item, string? selector) =>
-        string.IsNullOrWhiteSpace(selector) ? null : item.QuerySelector(selector)?.TextContent.Trim();
+        string.IsNullOrWhiteSpace(selector) ? null : NormalizeWhitespace(item.QuerySelector(selector)?.TextContent);
+
+    private static string? NormalizeWhitespace(string? text) =>
+        string.IsNullOrWhiteSpace(text) ? null : Regex.Replace(text.Trim(), @"\s+", " ");
 
     private static string MakeAbsolute(string href, Broker broker)
     {

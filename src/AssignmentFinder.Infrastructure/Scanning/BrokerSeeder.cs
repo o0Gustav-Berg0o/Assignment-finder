@@ -30,6 +30,20 @@ public class BrokerSeeder(AppDbContext db)
                 AreaSelector = "div[data-flex] span:nth-of-type(2)",
             }),
         },
+        new Broker
+        {
+            Name = "Cinode Market",
+            WebsiteUrl = "https://cinode.com/market",
+            AssignmentPortalUrl = "https://cinode.com/market",
+            ConnectorKey = GenericSelectorConnector.ConnectorKey,
+            SelectorConfigJson = JsonSerializer.Serialize(new CssSelectorConfig
+            {
+                ItemSelector = "div.requests-list__card",
+                TitleSelector = "a.list__heading",
+                LinkSelector = "a.list__heading",
+                AreaSelector = ".focus__item:has(use[href='#icon-map-pin']) p",
+            }),
+        },
     ];
 
     public async Task SeedAsync()

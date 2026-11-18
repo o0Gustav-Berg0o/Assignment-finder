@@ -1,4 +1,5 @@
 using AssignmentFinder.Infrastructure.Data;
+using AssignmentFinder.Infrastructure.Identity;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ public class SetBrokerEnabledEndpoint(AppDbContext db) : Endpoint<SetBrokerEnabl
     public override void Configure()
     {
         Post("/api/brokers/{Id}/enabled");
+        Roles(ApplicationUser.AdminRole);
     }
 
     public override async Task HandleAsync(SetBrokerEnabledRequest req, CancellationToken ct)

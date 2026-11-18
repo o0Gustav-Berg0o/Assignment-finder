@@ -5,11 +5,56 @@
     <strong>{{ totalAssignments() }}</strong> assignments total across {{ brokers().length }} broker(s).
   </p>
 
+  <p>
+    <button (click)="startCreate()">Add broker</button>
+    <button [disabled]="scanningAll()" (click)="scanAll()">
+      {{ scanningAll() ? 'Scanning all...' : 'Scan all now' }}
+    </button>
+  </p>
+
+  <form *ngIf="showForm()" (ngSubmit)="submitForm()" class="broker-form">
+    <label>
+      Name
+      <input type="text" name="name" [(ngModel)]="form.name" required />
+    </label>
+    <label>
+      Website URL
+      <input type="text" name="websiteUrl" [(ngModel)]="form.websiteUrl" required />
+    </label>
+    <label>
+      Assignment portal URL
+      <input type="text" name="assignmentPortalUrl" [(ngModel)]="form.assignmentPortalUrl" />
+    </label>
+    <label>
+      Connector key
+      <input type="text" name="connectorKey" [(ngModel)]="form.connectorKey" required />
+    </label>
+    <label>
+      Selector config JSON (for generic-selector)
+      <textarea name="selectorConfigJson" rows="4" [(ngModel)]="form.selectorConfigJson"></textarea>
+    </label>
+    <label>
+      <input type="checkbox" name="isEnabled" [(ngModel)]="form.isEnabled" />
+      Enabled
+    </label>
+    <label>
+      Login username (only if the listing requires one)
+      <input type="text" name="loginUsername" [(ngModel)]="form.loginUsername" />
+    </label>
+    <label>
+      Login password <span *ngIf="editingId()">(leave blank to keep the current one)</span>
+      <input type="password" name="loginPassword" [(ngModel)]="form.loginPassword" />
+    </label>
+    <button type="submit">{{ editingId() ? 'Save' : 'Create' }}</button>
+    <button type="button" (click)="cancelForm()">Cancel</button>
+  </form>
+
   <table *ngIf="brokers().length">
     <thead>
       <tr>
         <th>Name</th>
         <th>Connector</th>
+        <th>Login</th>
         <th>Status</th>
         <th>Last scraped</th>
         <th>Assignments</th>
@@ -21,6 +66,7 @@
       <tr *ngFor="let b of brokers()">
         <td><a [href]="b.websiteUrl" target="_blank" rel="noopener">{{ b.name }}</a></td>
         <td>{{ b.connectorKey }}</td>
+        <td>{{ b.hasLoginCredentials ? '🔒 ' + b.loginUsername : '—' }}</td>
         <td [title]="b.lastScanError ?? ''">
           <span *ngIf="b.lastScanSucceeded === true">✅ OK</span>
           <span *ngIf="b.lastScanSucceeded === false">❌ Failing</span>
@@ -35,6 +81,8 @@
           <button [disabled]="scanningId() === b.id" (click)="scanNow(b)">
             {{ scanningId() === b.id ? 'Scanning...' : 'Scan now' }}
           </button>
+          <button (click)="startEdit(b)">Edit</button>
+          <button (click)="deleteBroker(b)">Delete</button>
         </td>
       </tr>
     </tbody>

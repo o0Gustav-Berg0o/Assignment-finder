@@ -1,4 +1,5 @@
 using AssignmentFinder.Infrastructure.Data;
+using AssignmentFinder.Infrastructure.Identity;
 using AssignmentFinder.Infrastructure.Scanning;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ public class ScanNowEndpoint(AppDbContext db, ScanPipeline pipeline) : Endpoint<
     public override void Configure()
     {
         Post("/api/brokers/{Id}/scan-now");
+        Roles(ApplicationUser.AdminRole);
     }
 
     public override async Task HandleAsync(ScanNowRequest req, CancellationToken ct)

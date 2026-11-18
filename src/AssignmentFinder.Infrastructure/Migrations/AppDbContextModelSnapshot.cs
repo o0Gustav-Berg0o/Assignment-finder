@@ -71,6 +71,34 @@ namespace AssignmentFinder.Infrastructure.Migrations
                     b.ToTable("Assignments");
                 });
 
+            modelBuilder.Entity("AssignmentFinder.Domain.AssignmentInterest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssignmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("MarkedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.HasIndex("UserId", "AssignmentId")
+                        .IsUnique();
+
+                    b.ToTable("AssignmentInterests");
+                });
+
             modelBuilder.Entity("AssignmentFinder.Domain.Broker", b =>
                 {
                     b.Property<int>("Id")
@@ -84,7 +112,7 @@ namespace AssignmentFinder.Infrastructure.Migrations
 
                     b.Property<string>("ConnectorKey")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
@@ -98,9 +126,15 @@ namespace AssignmentFinder.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastScrapedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("LoginPasswordEncrypted")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LoginUsername")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SelectorConfigJson")
                         .HasColumnType("nvarchar(max)");
@@ -111,7 +145,7 @@ namespace AssignmentFinder.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConnectorKey")
+                    b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("Brokers");
@@ -259,6 +293,25 @@ namespace AssignmentFinder.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Xml")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -401,6 +454,17 @@ namespace AssignmentFinder.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Broker");
+                });
+
+            modelBuilder.Entity("AssignmentFinder.Domain.AssignmentInterest", b =>
+                {
+                    b.HasOne("AssignmentFinder.Domain.Assignment", "Assignment")
+                        .WithMany()
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assignment");
                 });
 
             modelBuilder.Entity("AssignmentFinder.Domain.Match", b =>

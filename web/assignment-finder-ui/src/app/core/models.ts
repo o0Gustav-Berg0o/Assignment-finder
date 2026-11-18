@@ -13,11 +13,42 @@ export interface Broker {
   websiteUrl: string;
   assignmentPortalUrl: string | null;
   connectorKey: string;
+  selectorConfigJson: string | null;
   isEnabled: boolean;
   lastScrapedAt: string | null;
   lastScanSucceeded: boolean | null;
   lastScanError: string | null;
   assignmentCount: number;
+  hasLoginCredentials: boolean;
+  loginUsername: string | null;
+}
+
+export interface UpsertBroker {
+  name: string;
+  websiteUrl: string;
+  assignmentPortalUrl: string | null;
+  connectorKey: string;
+  selectorConfigJson: string | null;
+  isEnabled: boolean;
+  loginUsername: string | null;
+  loginPassword: string | null;
+}
+
+export interface AssignmentItem {
+  id: number;
+  title: string;
+  description: string | null;
+  area: string | null;
+  skills: string | null;
+  url: string;
+  brokerName: string;
+  firstSeenAt: string;
+  isInteresting: boolean;
+}
+
+export interface AssignmentsPage {
+  items: AssignmentItem[];
+  totalCount: number;
 }
 
 export interface MatchItem {
