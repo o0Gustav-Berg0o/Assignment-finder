@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY AssignmentFinder.sln .
 COPY src/AssignmentFinder.Domain/AssignmentFinder.Domain.csproj src/AssignmentFinder.Domain/
 COPY src/AssignmentFinder.Infrastructure/AssignmentFinder.Infrastructure.csproj src/AssignmentFinder.Infrastructure/
 COPY src/AssignmentFinder.Scraping/AssignmentFinder.Scraping.csproj src/AssignmentFinder.Scraping/
