@@ -17,7 +17,7 @@ namespace AssignmentFinder.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -127,6 +127,9 @@ namespace AssignmentFinder.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("LoginPasswordEncrypted")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LoginUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LoginUsername")

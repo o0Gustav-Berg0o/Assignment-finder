@@ -40,4 +40,8 @@ export class BrokersService {
       {},
     );
   }
+
+  revealPassword(id: number): Observable<{ password: string }> {
+    return this.http.get<{ password: string }>(`/api/brokers/${id}/login-password`);
+  }
 }

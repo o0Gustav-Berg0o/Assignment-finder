@@ -8,6 +8,7 @@ const EMPTY_FORM: UpsertBroker = {
   name: '',
   websiteUrl: '',
   assignmentPortalUrl: null,
+  loginUrl: null,
   connectorKey: 'generic-selector',
   selectorConfigJson: null,
   isEnabled: true,
@@ -32,6 +33,10 @@ export class BrokersComponent implements OnInit {
   readonly editingId = signal<number | null>(null);
   readonly showForm = signal(false);
   form: UpsertBroker = { ...EMPTY_FORM };
+
+  /** Broker id -> revealed plaintext password, fetched on demand and kept only in memory. */
+  readonly revealedPasswords = signal<Record<number, string>>({});
+  readonly copiedId = signal<number | null>(null);
 
   constructor(private readonly brokersService: BrokersService) {}
 
@@ -81,6 +86,7 @@ export class BrokersComponent implements OnInit {
       name: broker.name,
       websiteUrl: broker.websiteUrl,
       assignmentPortalUrl: broker.assignmentPortalUrl,
+      loginUrl: broker.loginUrl,
       connectorKey: broker.connectorKey,
       selectorConfigJson: broker.selectorConfigJson,
       isEnabled: broker.isEnabled,
@@ -111,5 +117,38 @@ export class BrokersComponent implements OnInit {
       return;
     }
     this.brokersService.delete(broker.id).subscribe(() => this.refresh());
+  }
+
+  isPasswordRevealed(broker: Broker): boolean {
+    return broker.id in this.revealedPasswords();
+  }
+
+  revealedPassword(broker: Broker): string {
+    return this.revealedPasswords()[broker.id] ?? '';
+  }
+
+  toggleRevealPassword(broker: Broker): void {
+    if (this.isPasswordRevealed(broker)) {
+      this.revealedPasswords.update(({ [broker.id]: _removed, ...rest }) => rest);
+      return;
+    }
+    this.brokersService.revealPassword(broker.id).subscribe(({ password }) => {
+      this.revealedPasswords.update((current) => ({ ...current, [broker.id]: password }));
+    });
+  }
+
+  copyPassword(broker: Broker): void {
+    const password = this.revealedPassword(broker);
+    if (!password) {
+      return;
+    }
+    navigator.clipboard.writeText(password).then(() => {
+      this.copiedId.set(broker.id);
+      setTimeout(() => this.copiedId.set(null), 1500);
+    });
+  }
+
+  loginLink(broker: Broker): string {
+    return broker.loginUrl || broker.websiteUrl;
   }
 }

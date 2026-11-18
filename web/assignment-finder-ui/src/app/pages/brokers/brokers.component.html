@@ -26,6 +26,10 @@
       <input type="text" name="assignmentPortalUrl" [(ngModel)]="form.assignmentPortalUrl" />
     </label>
     <label>
+      Login URL (if different from Website URL)
+      <input type="text" name="loginUrl" [(ngModel)]="form.loginUrl" />
+    </label>
+    <label>
       Connector key
       <input type="text" name="connectorKey" [(ngModel)]="form.connectorKey" required />
     </label>
@@ -66,7 +70,22 @@
       <tr *ngFor="let b of brokers()">
         <td><a [href]="b.websiteUrl" target="_blank" rel="noopener">{{ b.name }}</a></td>
         <td>{{ b.connectorKey }}</td>
-        <td>{{ b.hasLoginCredentials ? '🔒 ' + b.loginUsername : '—' }}</td>
+        <td>
+          <a [href]="loginLink(b)" target="_blank" rel="noopener">Open login page</a>
+          <ng-container *ngIf="b.hasLoginCredentials">
+            <br />
+            {{ b.loginUsername }}
+            <button type="button" (click)="toggleRevealPassword(b)">
+              {{ isPasswordRevealed(b) ? 'Hide password' : 'Show password' }}
+            </button>
+            <ng-container *ngIf="isPasswordRevealed(b)">
+              <code>{{ revealedPassword(b) }}</code>
+              <button type="button" (click)="copyPassword(b)">
+                {{ copiedId() === b.id ? 'Copied!' : 'Copy' }}
+              </button>
+            </ng-container>
+          </ng-container>
+        </td>
         <td [title]="b.lastScanError ?? ''">
           <span *ngIf="b.lastScanSucceeded === true">✅ OK</span>
           <span *ngIf="b.lastScanSucceeded === false">❌ Failing</span>

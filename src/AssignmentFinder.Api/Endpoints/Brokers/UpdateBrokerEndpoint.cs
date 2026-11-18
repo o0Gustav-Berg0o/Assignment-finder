@@ -38,6 +38,7 @@ public class UpdateBrokerEndpoint(AppDbContext db, BrokerCredentialProtector cre
         broker.Name = req.Name;
         broker.WebsiteUrl = req.WebsiteUrl;
         broker.AssignmentPortalUrl = req.AssignmentPortalUrl;
+        broker.LoginUrl = req.LoginUrl;
         broker.ConnectorKey = req.ConnectorKey;
         broker.SelectorConfigJson = req.SelectorConfigJson;
         broker.IsEnabled = req.IsEnabled;
@@ -60,7 +61,7 @@ public class UpdateBrokerEndpoint(AppDbContext db, BrokerCredentialProtector cre
         await db.SaveChangesAsync(ct);
 
         await HttpContext.Response.SendOkAsync(new BrokerResponse(
-            broker.Id, broker.Name, broker.WebsiteUrl, broker.AssignmentPortalUrl, broker.ConnectorKey,
+            broker.Id, broker.Name, broker.WebsiteUrl, broker.AssignmentPortalUrl, broker.LoginUrl, broker.ConnectorKey,
             broker.SelectorConfigJson, broker.IsEnabled, broker.LastScrapedAt, broker.LastScanSucceeded,
             broker.LastScanError, assignmentCount, broker.LoginPasswordEncrypted != null, broker.LoginUsername),
             null, ct);

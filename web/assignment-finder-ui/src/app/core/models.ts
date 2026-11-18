@@ -12,6 +12,7 @@ export interface Broker {
   name: string;
   websiteUrl: string;
   assignmentPortalUrl: string | null;
+  loginUrl: string | null;
   connectorKey: string;
   selectorConfigJson: string | null;
   isEnabled: boolean;
@@ -27,6 +28,7 @@ export interface UpsertBroker {
   name: string;
   websiteUrl: string;
   assignmentPortalUrl: string | null;
+  loginUrl: string | null;
   connectorKey: string;
   selectorConfigJson: string | null;
   isEnabled: boolean;

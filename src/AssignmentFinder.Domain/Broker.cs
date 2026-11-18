@@ -29,8 +29,11 @@ public class Broker
     /// <summary>Username for brokers whose listing requires login. Null if none is needed.</summary>
     public string? LoginUsername { get; set; }
 
-    /// <summary>Password for LoginUsername, encrypted at rest via BrokerCredentialProtector. Never exposed via the API.</summary>
+    /// <summary>Password for LoginUsername, encrypted at rest via BrokerCredentialProtector.</summary>
     public string? LoginPasswordEncrypted { get; set; }
+
+    /// <summary>The site's own login page, if different from WebsiteUrl. Used for a quick "log in" link.</summary>
+    public string? LoginUrl { get; set; }
 
     public List<Assignment> Assignments { get; set; } = [];
 }

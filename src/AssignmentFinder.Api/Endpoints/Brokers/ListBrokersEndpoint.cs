@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AssignmentFinder.Api.Endpoints.Brokers;
 
 public record BrokerResponse(
-    int Id, string Name, string WebsiteUrl, string? AssignmentPortalUrl,
+    int Id, string Name, string WebsiteUrl, string? AssignmentPortalUrl, string? LoginUrl,
     string ConnectorKey, string? SelectorConfigJson, bool IsEnabled, DateTimeOffset? LastScrapedAt,
     bool? LastScanSucceeded, string? LastScanError, int AssignmentCount, bool HasLoginCredentials,
     string? LoginUsername);
@@ -23,7 +23,7 @@ public class ListBrokersEndpoint(AppDbContext db) : EndpointWithoutRequest<List<
     {
         var brokers = await db.Brokers
             .Select(b => new BrokerResponse(
-                b.Id, b.Name, b.WebsiteUrl, b.AssignmentPortalUrl, b.ConnectorKey, b.SelectorConfigJson,
+                b.Id, b.Name, b.WebsiteUrl, b.AssignmentPortalUrl, b.LoginUrl, b.ConnectorKey, b.SelectorConfigJson,
                 b.IsEnabled, b.LastScrapedAt, b.LastScanSucceeded, b.LastScanError, b.Assignments.Count,
                 b.LoginPasswordEncrypted != null, b.LoginUsername))
             .ToListAsync(ct);
