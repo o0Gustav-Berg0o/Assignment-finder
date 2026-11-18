@@ -1,0 +1,50 @@
+<div class="page">
+  <h1>My criteria</h1>
+
+  <table *ngIf="criteria().length">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Area keywords</th>
+        <th>Requirement keywords</th>
+        <th>Min matches</th>
+        <th>Active</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of criteria()">
+        <td>{{ c.name }}</td>
+        <td>{{ c.areaKeywords }}</td>
+        <td>{{ c.requirementKeywords }}</td>
+        <td>{{ c.minRequirementMatches }}</td>
+        <td>
+          <input type="checkbox" [checked]="c.isActive" (change)="toggleActive(c)" />
+        </td>
+        <td><button (click)="remove(c)">Delete</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!criteria().length">No search criteria yet - add one below.</p>
+
+  <h2>Add criterion</h2>
+  <form (ngSubmit)="add()">
+    <label>
+      Name
+      <input name="name" [(ngModel)]="newName" required />
+    </label>
+    <label>
+      Area keywords (comma-separated, e.g. Stockholm,Remote)
+      <input name="area" [(ngModel)]="newArea" />
+    </label>
+    <label>
+      Requirement keywords (comma-separated, e.g. C#,Azure)
+      <input name="requirements" [(ngModel)]="newRequirements" />
+    </label>
+    <label>
+      Minimum requirement matches
+      <input type="number" min="0" name="minMatches" [(ngModel)]="newMinMatches" />
+    </label>
+    <button type="submit">Add</button>
+  </form>
+</div>

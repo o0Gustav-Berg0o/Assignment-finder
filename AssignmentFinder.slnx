@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AssignmentFinder.Api/AssignmentFinder.Api.csproj" />
+    <Project Path="src/AssignmentFinder.Domain/AssignmentFinder.Domain.csproj" />
+    <Project Path="src/AssignmentFinder.Infrastructure/AssignmentFinder.Infrastructure.csproj" />
+    <Project Path="src/AssignmentFinder.Scraping/AssignmentFinder.Scraping.csproj" />
+    <Project Path="src/AssignmentFinder.Tests/AssignmentFinder.Tests.csproj" />
+    <Project Path="src/AssignmentFinder.Worker/AssignmentFinder.Worker.csproj" />
+  </Folder>
+</Solution>

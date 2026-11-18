@@ -1,0 +1,8 @@
+<nav *ngIf="auth.isLoggedIn()">
+  <a routerLink="/matches">Matches</a>
+  <a routerLink="/criteria">Criteria</a>
+  <a routerLink="/brokers">Brokers</a>
+  <button (click)="logout()">Log out</button>
+</nav>
+
+<router-outlet />

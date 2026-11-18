@@ -1,0 +1,32 @@
+using AssignmentFinder.Infrastructure.Data;
+using AssignmentFinder.Infrastructure.Scanning;
+using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
+
+namespace AssignmentFinder.Api.Endpoints.Brokers;
+
+public record ScanNowRequest(int Id);
+
+public record ScanNowResponse(int NewAssignments);
+
+public class ScanNowEndpoint(AppDbContext db, ScanPipeline pipeline) : Endpoint<ScanNowRequest, ScanNowResponse>
+{
+    public override void Configure()
+    {
+        Post("/api/brokers/{Id}/scan-now");
+    }
+
+    public override async Task HandleAsync(ScanNowRequest req, CancellationToken ct)
+    {
+        var broker = await db.Brokers.FirstOrDefaultAsync(b => b.Id == req.Id, ct);
+        if (broker is null)
+        {
+            await HttpContext.Response.SendNotFoundAsync(ct);
+            return;
+        }
+
+        var newIds = await pipeline.ScanBrokerAsync(broker, ct);
+
+        await HttpContext.Response.SendOkAsync(new ScanNowResponse(newIds.Count), null, ct);
+    }
+}

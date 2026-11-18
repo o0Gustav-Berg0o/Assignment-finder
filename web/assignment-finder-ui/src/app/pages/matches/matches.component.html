@@ -1,0 +1,34 @@
+<div class="page">
+  <h1>Matches ({{ totalCount() }})</h1>
+
+  <label>
+    <input type="checkbox" [(ngModel)]="unseenOnly" (change)="refresh()" />
+    Unseen only
+  </label>
+
+  <table *ngIf="matches().length">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Broker</th>
+        <th>Area</th>
+        <th>Skills</th>
+        <th>Matched at</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let m of matches()" [class.seen]="m.isSeen">
+        <td><a [href]="m.url" target="_blank" rel="noopener">{{ m.title }}</a></td>
+        <td>{{ m.brokerName }}</td>
+        <td>{{ m.area }}</td>
+        <td>{{ m.skills }}</td>
+        <td>{{ m.matchedAt | date: 'short' }}</td>
+        <td>
+          <button *ngIf="!m.isSeen" (click)="markSeen(m)">Mark seen</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!matches().length">No matches yet.</p>
+</div>

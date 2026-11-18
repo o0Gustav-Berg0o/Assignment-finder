@@ -1,0 +1,31 @@
+<div class="page">
+  <h1>Brokers</h1>
+
+  <table *ngIf="brokers().length">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Connector</th>
+        <th>Last scraped</th>
+        <th>Enabled</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let b of brokers()">
+        <td><a [href]="b.websiteUrl" target="_blank" rel="noopener">{{ b.name }}</a></td>
+        <td>{{ b.connectorKey }}</td>
+        <td>{{ b.lastScrapedAt ? (b.lastScrapedAt | date: 'short') : 'never' }}</td>
+        <td>
+          <input type="checkbox" [checked]="b.isEnabled" (change)="toggleEnabled(b)" />
+        </td>
+        <td>
+          <button [disabled]="scanningId() === b.id" (click)="scanNow(b)">
+            {{ scanningId() === b.id ? 'Scanning...' : 'Scan now' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!brokers().length">No brokers configured yet.</p>
+</div>
