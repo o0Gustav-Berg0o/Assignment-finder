@@ -35,7 +35,10 @@ public class ExampleSpaBrokerConnector : PlaywrightConnectorBase
                 continue;
             }
 
-            var url = Uri.TryCreate(href, UriKind.Absolute, out var absolute)
+            // A root-relative path like "/en/x?y=1" parses as a valid absolute file:// URI on
+            // Linux, so TryCreate alone isn't enough - only trust it for actual http(s) URLs.
+            var url = Uri.TryCreate(href, UriKind.Absolute, out var absolute) &&
+                      (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps)
                 ? absolute.ToString()
                 : new Uri(new Uri(broker.AssignmentPortalUrl ?? broker.WebsiteUrl), href).ToString();
 

@@ -33,6 +33,10 @@ public class ScanPipeline(
         return new ScanResult(brokers.Count, newAssignmentIds.Count, matchCount);
     }
 
+    /// <summary>Runs the matching step for a set of newly-scraped assignment ids (e.g. from ScanBrokerAsync).</summary>
+    public Task<int> MatchAsync(IReadOnlyList<int> newAssignmentIds, CancellationToken ct) =>
+        MatchNewAssignmentsAsync(newAssignmentIds, ct);
+
     public async Task<IReadOnlyList<int>> ScanBrokerAsync(Broker broker, CancellationToken ct)
     {
         var connector = connectors.FirstOrDefault(c => c.Key == broker.ConnectorKey);

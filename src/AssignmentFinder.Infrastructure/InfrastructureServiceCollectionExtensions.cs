@@ -31,6 +31,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<MatchingService>();
         services.AddScoped<ScanPipeline>();
         services.AddScoped<AdminSeeder>();
+        services.AddScoped<BrokerSeeder>();
 
         return services;
     }

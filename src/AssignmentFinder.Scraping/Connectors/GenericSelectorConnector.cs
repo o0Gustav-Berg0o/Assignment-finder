@@ -62,7 +62,10 @@ public class GenericSelectorConnector(IHttpClientFactory httpClientFactory) : Ht
 
     private static string MakeAbsolute(string href, Broker broker)
     {
-        if (Uri.TryCreate(href, UriKind.Absolute, out var absolute))
+        // A root-relative path like "/en/Login?x=1" parses as a valid absolute file:// URI on
+        // Linux, so TryCreate alone isn't enough - only trust it for actual http(s) URLs.
+        if (Uri.TryCreate(href, UriKind.Absolute, out var absolute) &&
+            (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps))
         {
             return absolute.ToString();
         }

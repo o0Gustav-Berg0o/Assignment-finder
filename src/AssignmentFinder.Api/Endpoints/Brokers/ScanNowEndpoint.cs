@@ -7,7 +7,7 @@ namespace AssignmentFinder.Api.Endpoints.Brokers;
 
 public record ScanNowRequest(int Id);
 
-public record ScanNowResponse(int NewAssignments);
+public record ScanNowResponse(int NewAssignments, int NewMatches);
 
 public class ScanNowEndpoint(AppDbContext db, ScanPipeline pipeline) : Endpoint<ScanNowRequest, ScanNowResponse>
 {
@@ -26,7 +26,8 @@ public class ScanNowEndpoint(AppDbContext db, ScanPipeline pipeline) : Endpoint<
         }
 
         var newIds = await pipeline.ScanBrokerAsync(broker, ct);
+        var matchCount = await pipeline.MatchAsync(newIds, ct);
 
-        await HttpContext.Response.SendOkAsync(new ScanNowResponse(newIds.Count), null, ct);
+        await HttpContext.Response.SendOkAsync(new ScanNowResponse(newIds.Count, matchCount), null, ct);
     }
 }
