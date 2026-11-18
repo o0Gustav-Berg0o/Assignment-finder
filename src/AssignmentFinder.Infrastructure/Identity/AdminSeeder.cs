@@ -3,6 +3,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace AssignmentFinder.Infrastructure.Identity;
 
+public class AdminSeedingException(string action, IEnumerable<IdentityError> errors)
+    : Exception($"AdminSeeder failed to {action}: {string.Join("; ", errors.Select(e => e.Description))}");
+
 /// <summary>
 /// Ensures the single bootstrap admin account (configured via Admin:Email / Admin:Password)
 /// exists, is approved, and holds the Admin role. Runs idempotently on every startup so the
@@ -40,7 +43,11 @@ public class AdminSeeder(
                 EmailConfirmed = true,
                 IsApproved = true,
             };
-            await userManager.CreateAsync(admin, adminPassword);
+            var createResult = await userManager.CreateAsync(admin, adminPassword);
+            if (!createResult.Succeeded)
+            {
+                throw new AdminSeedingException("create the bootstrap admin", createResult.Errors);
+            }
         }
         else
         {
@@ -52,8 +59,17 @@ public class AdminSeeder(
 
             if (!await userManager.CheckPasswordAsync(admin, adminPassword))
             {
-                await userManager.RemovePasswordAsync(admin);
-                await userManager.AddPasswordAsync(admin, adminPassword);
+                var removeResult = await userManager.RemovePasswordAsync(admin);
+                if (!removeResult.Succeeded)
+                {
+                    throw new AdminSeedingException("remove the admin's old password", removeResult.Errors);
+                }
+
+                var addResult = await userManager.AddPasswordAsync(admin, adminPassword);
+                if (!addResult.Succeeded)
+                {
+                    throw new AdminSeedingException("set the admin's new password", addResult.Errors);
+                }
             }
         }
 

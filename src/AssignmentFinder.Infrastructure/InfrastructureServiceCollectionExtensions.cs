@@ -21,6 +21,9 @@ public static class InfrastructureServiceCollectionExtensions
             .AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequiredLength = 8;
+                // Relaxed so a plain lowercase GUID (128 bits of entropy, no uppercase letters)
+                // is accepted - length/randomness matter more here than character-class mixing.
+                options.Password.RequireUppercase = false;
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>();
