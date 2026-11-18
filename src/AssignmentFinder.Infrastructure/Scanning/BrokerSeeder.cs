@@ -46,6 +46,14 @@ public class BrokerSeeder(AppDbContext db)
                 DetailDescriptionSelector = "article.split__left .wysiwyg",
             }),
         },
+        new Broker
+        {
+            Name = "TED - Offentliga upphandlingar (IT)",
+            WebsiteUrl = "https://ted.europa.eu/",
+            AssignmentPortalUrl = null,
+            ConnectorKey = TedProcurementConnector.ConnectorKey,
+            SelectorConfigJson = null,
+        },
     ];
 
     public async Task SeedAsync()
