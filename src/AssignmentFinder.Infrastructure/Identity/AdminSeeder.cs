@@ -42,10 +42,19 @@ public class AdminSeeder(
             };
             await userManager.CreateAsync(admin, adminPassword);
         }
-        else if (!admin.IsApproved)
+        else
         {
-            admin.IsApproved = true;
-            await userManager.UpdateAsync(admin);
+            if (!admin.IsApproved)
+            {
+                admin.IsApproved = true;
+                await userManager.UpdateAsync(admin);
+            }
+
+            if (!await userManager.CheckPasswordAsync(admin, adminPassword))
+            {
+                var resetToken = await userManager.GeneratePasswordResetTokenAsync(admin);
+                await userManager.ResetPasswordAsync(admin, resetToken, adminPassword);
+            }
         }
 
         if (!await userManager.IsInRoleAsync(admin, ApplicationUser.AdminRole))
