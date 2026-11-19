@@ -5,13 +5,13 @@ import { CriteriaService } from '../../core/criteria.service';
 import { Criterion } from '../../core/models';
 
 @Component({
-  selector: 'app-criteria',
+  selector: 'app-saved-searches',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './criteria.component.html',
+  templateUrl: './saved-searches.component.html',
 })
-export class CriteriaComponent implements OnInit {
-  readonly criteria = signal<Criterion[]>([]);
+export class SavedSearchesComponent implements OnInit {
+  readonly savedSearches = signal<Criterion[]>([]);
 
   newName = '';
   newArea = '';
@@ -25,7 +25,7 @@ export class CriteriaComponent implements OnInit {
   }
 
   refresh(): void {
-    this.criteriaService.list().subscribe((criteria) => this.criteria.set(criteria));
+    this.criteriaService.list().subscribe((savedSearches) => this.savedSearches.set(savedSearches));
   }
 
   add(): void {
@@ -50,13 +50,13 @@ export class CriteriaComponent implements OnInit {
       });
   }
 
-  toggleActive(criterion: Criterion): void {
+  toggleActive(savedSearch: Criterion): void {
     this.criteriaService
-      .update(criterion.id, { ...criterion, isActive: !criterion.isActive })
+      .update(savedSearch.id, { ...savedSearch, isActive: !savedSearch.isActive })
       .subscribe(() => this.refresh());
   }
 
-  remove(criterion: Criterion): void {
-    this.criteriaService.delete(criterion.id).subscribe(() => this.refresh());
+  remove(savedSearch: Criterion): void {
+    this.criteriaService.delete(savedSearch.id).subscribe(() => this.refresh());
   }
 }

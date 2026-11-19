@@ -18,6 +18,9 @@ export class MatchesComponent implements OnInit {
   readonly totalCount = signal(0);
   readonly page = signal(1);
   readonly pageSize = PAGE_SIZE;
+
+  query = '';
+  area = '';
   unseenOnly = false;
 
   constructor(private readonly matchesService: MatchesService) {}
@@ -27,10 +30,18 @@ export class MatchesComponent implements OnInit {
   }
 
   refresh(): void {
-    this.matchesService.list(this.unseenOnly, this.page(), this.pageSize).subscribe((page) => {
-      this.matches.set(page.items);
-      this.totalCount.set(page.totalCount);
-    });
+    this.matchesService
+      .list({
+        query: this.query,
+        area: this.area,
+        unseenOnly: this.unseenOnly,
+        page: this.page(),
+        pageSize: this.pageSize,
+      })
+      .subscribe((page) => {
+        this.matches.set(page.items);
+        this.totalCount.set(page.totalCount);
+      });
   }
 
   onFilterChange(): void {

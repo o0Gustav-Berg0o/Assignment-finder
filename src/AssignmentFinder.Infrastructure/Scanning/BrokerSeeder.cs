@@ -54,6 +54,31 @@ public class BrokerSeeder(AppDbContext db)
             ConnectorKey = TedProcurementConnector.ConnectorKey,
             SelectorConfigJson = null,
         },
+
+        // Login-gated candidates: assignment listings require a registered account, so these
+        // start disabled with no selector config. An admin can set LoginUrl/credentials via the
+        // Brokers page's quick-login link, inspect the logged-in listing page, then fill in
+        // SelectorConfigJson and enable the broker.
+        new Broker
+        {
+            Name = "Verama",
+            WebsiteUrl = "https://www.verama.com/",
+            AssignmentPortalUrl = null,
+            LoginUrl = "https://www.verama.com/login",
+            ConnectorKey = GenericSelectorConnector.ConnectorKey,
+            SelectorConfigJson = null,
+            IsEnabled = false,
+        },
+        new Broker
+        {
+            Name = "Nexer Xtended",
+            WebsiteUrl = "https://nexergroup.com/nexer-xtended/",
+            AssignmentPortalUrl = null,
+            LoginUrl = "https://nexergroup.com/nexer-xtended/",
+            ConnectorKey = GenericSelectorConnector.ConnectorKey,
+            SelectorConfigJson = null,
+            IsEnabled = false,
+        },
     ];
 
     public async Task SeedAsync()

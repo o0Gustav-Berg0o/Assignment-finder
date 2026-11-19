@@ -4,12 +4,21 @@
     <span class="subtle">{{ totalCount() }} total</span>
   </div>
 
-  <div class="toolbar">
+  <form (ngSubmit)="onFilterChange()" class="filters">
     <label>
-      <input type="checkbox" [(ngModel)]="unseenOnly" (change)="onFilterChange()" />
+      Search
+      <input type="text" placeholder="Title, description, skills" [(ngModel)]="query" name="query" />
+    </label>
+    <label>
+      Area
+      <input type="text" placeholder="e.g. Stockholm" [(ngModel)]="area" name="area" />
+    </label>
+    <label>
+      <input type="checkbox" [(ngModel)]="unseenOnly" name="unseenOnly" (change)="onFilterChange()" />
       Unseen only
     </label>
-  </div>
+    <button type="submit">Filter</button>
+  </form>
 
   <table *ngIf="matches().length">
     <thead>

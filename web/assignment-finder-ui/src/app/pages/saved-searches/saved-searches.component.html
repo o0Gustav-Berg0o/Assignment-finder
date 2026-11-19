@@ -1,9 +1,9 @@
 <div class="page">
   <div class="page-header">
-    <h1>My criteria</h1>
+    <h1>Saved searches</h1>
   </div>
 
-  <table *ngIf="criteria().length">
+  <table *ngIf="savedSearches().length">
     <thead>
       <tr>
         <th>Name</th>
@@ -15,21 +15,21 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let c of criteria()">
-        <td>{{ c.name }}</td>
-        <td>{{ c.areaKeywords }}</td>
-        <td>{{ c.requirementKeywords }}</td>
-        <td>{{ c.minRequirementMatches }}</td>
+      <tr *ngFor="let s of savedSearches()">
+        <td>{{ s.name }}</td>
+        <td>{{ s.areaKeywords }}</td>
+        <td>{{ s.requirementKeywords }}</td>
+        <td>{{ s.minRequirementMatches }}</td>
         <td>
-          <input type="checkbox" [checked]="c.isActive" (change)="toggleActive(c)" />
+          <input type="checkbox" [checked]="s.isActive" (change)="toggleActive(s)" />
         </td>
-        <td><button (click)="remove(c)">Delete</button></td>
+        <td><button (click)="remove(s)">Delete</button></td>
       </tr>
     </tbody>
   </table>
-  <p class="subtle" *ngIf="!criteria().length">No search criteria yet - add one below.</p>
+  <p class="subtle" *ngIf="!savedSearches().length">No saved searches yet - add one below.</p>
 
-  <h2>Add criterion</h2>
+  <h2>Add saved search</h2>
   <form (ngSubmit)="add()" class="card">
     <label>
       Name
