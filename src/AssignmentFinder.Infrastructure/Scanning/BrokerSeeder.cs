@@ -79,6 +79,36 @@ public class BrokerSeeder(AppDbContext db)
             SelectorConfigJson = null,
             IsEnabled = false,
         },
+        new Broker
+        {
+            Name = "Onsiter",
+            WebsiteUrl = "https://onsiter.com/",
+            AssignmentPortalUrl = null,
+            LoginUrl = "https://onsiter.com/",
+            ConnectorKey = GenericSelectorConnector.ConnectorKey,
+            SelectorConfigJson = null,
+            IsEnabled = false,
+        },
+        new Broker
+        {
+            Name = "Mercell (offentlig upphandling)",
+            WebsiteUrl = "https://www.mercell.com/sv-se/",
+            AssignmentPortalUrl = null,
+            LoginUrl = "https://app.mercell.com/",
+            ConnectorKey = GenericSelectorConnector.ConnectorKey,
+            SelectorConfigJson = null,
+            IsEnabled = false,
+        },
+        new Broker
+        {
+            Name = "e-Avrop (offentlig upphandling)",
+            WebsiteUrl = "https://www.e-avrop.com/",
+            AssignmentPortalUrl = null,
+            LoginUrl = "https://www.e-avrop.com/Login.aspx",
+            ConnectorKey = GenericSelectorConnector.ConnectorKey,
+            SelectorConfigJson = null,
+            IsEnabled = false,
+        },
     ];
 
     public async Task SeedAsync()
