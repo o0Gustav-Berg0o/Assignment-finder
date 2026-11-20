@@ -1,3 +1,4 @@
+using AssignmentFinder.Api.Shared;
 using AssignmentFinder.Infrastructure.Data;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -32,17 +33,10 @@ public class ListMatchesEndpoint(AppDbContext db) : Endpoint<ListMatchesRequest,
             .Where(m => m.UserId == userId)
             .Where(m => !req.UnseenOnly || !m.IsSeen);
 
-        if (!string.IsNullOrWhiteSpace(req.Query))
+        if (!string.IsNullOrWhiteSpace(req.Query) || !string.IsNullOrWhiteSpace(req.Area))
         {
-            query = query.Where(m =>
-                m.Assignment!.Title.Contains(req.Query) ||
-                (m.Assignment.Description != null && m.Assignment.Description.Contains(req.Query)) ||
-                (m.Assignment.Skills != null && m.Assignment.Skills.Contains(req.Query)));
-        }
-
-        if (!string.IsNullOrWhiteSpace(req.Area))
-        {
-            query = query.Where(m => m.Assignment!.Area != null && m.Assignment.Area.Contains(req.Area));
+            var matchingAssignmentIds = db.Assignments.AsQueryable().ApplyTextSearch(req.Query, req.Area).Select(a => a.Id);
+            query = query.Where(m => matchingAssignmentIds.Contains(m.AssignmentId));
         }
 
         var totalCount = await query.CountAsync(ct);

@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { withOptionalParams } from './http-params.util';
 import { AssignmentsPage } from './models';
 
 export interface AssignmentFilter {
@@ -17,21 +18,14 @@ export class AssignmentsService {
   constructor(private readonly http: HttpClient) {}
 
   list(filter: AssignmentFilter): Observable<AssignmentsPage> {
-    let params = new HttpParams();
-    if (filter.query) {
-      params = params.set('query', filter.query);
-    }
-    if (filter.area) {
-      params = params.set('area', filter.area);
-    }
-    if (filter.brokerId) {
-      params = params.set('brokerId', filter.brokerId);
-    }
-    if (filter.onlyInteresting) {
-      params = params.set('onlyInteresting', filter.onlyInteresting);
-    }
-    params = params.set('page', filter.page ?? 1);
-    params = params.set('pageSize', filter.pageSize ?? 20);
+    const params = withOptionalParams(new HttpParams(), {
+      query: filter.query,
+      area: filter.area,
+      brokerId: filter.brokerId,
+      onlyInteresting: filter.onlyInteresting,
+    })
+      .set('page', filter.page ?? 1)
+      .set('pageSize', filter.pageSize ?? 20);
 
     return this.http.get<AssignmentsPage>('/api/assignments', { params });
   }

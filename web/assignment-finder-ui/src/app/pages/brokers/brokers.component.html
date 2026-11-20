@@ -79,7 +79,7 @@
             <br />
             {{ b.loginUsername }}
             <button type="button" (click)="toggleRevealPassword(b)">
-              {{ isPasswordRevealed(b) ? 'Hide' : 'Show password' }}
+              {{ isPasswordRevealed(b) ? 'Hide password' : 'Show password' }}
             </button>
             <ng-container *ngIf="isPasswordRevealed(b)">
               <code>{{ revealedPassword(b) }}</code>

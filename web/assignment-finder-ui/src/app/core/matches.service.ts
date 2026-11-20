@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { withOptionalParams } from './http-params.util';
 import { MatchesPage } from './models';
 
 export interface MatchFilter {
@@ -16,18 +17,13 @@ export class MatchesService {
   constructor(private readonly http: HttpClient) {}
 
   list(filter: MatchFilter): Observable<MatchesPage> {
-    let params = new HttpParams();
-    if (filter.query) {
-      params = params.set('query', filter.query);
-    }
-    if (filter.area) {
-      params = params.set('area', filter.area);
-    }
-    if (filter.unseenOnly) {
-      params = params.set('unseenOnly', filter.unseenOnly);
-    }
-    params = params.set('page', filter.page ?? 1);
-    params = params.set('pageSize', filter.pageSize ?? 20);
+    const params = withOptionalParams(new HttpParams(), {
+      query: filter.query,
+      area: filter.area,
+      unseenOnly: filter.unseenOnly,
+    })
+      .set('page', filter.page ?? 1)
+      .set('pageSize', filter.pageSize ?? 20);
 
     return this.http.get<MatchesPage>('/api/matches', { params });
   }

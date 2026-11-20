@@ -62,61 +62,32 @@ public class BrokerSeeder(AppDbContext db)
         // scraping means writing a bespoke Playwright connector for it (copy ExampleSpaBrokerConnector,
         // which now supports a LoginConfig step) with real selectors verified against the live
         // logged-in page, then pointing ConnectorKey at that new class.
-        new Broker
-        {
-            Name = "Verama",
-            WebsiteUrl = "https://www.verama.com/",
-            AssignmentPortalUrl = null,
-            LoginUrl = "https://www.verama.com/login",
-            ConnectorKey = GenericSelectorConnector.ConnectorKey,
-            SelectorConfigJson = null,
-            IsEnabled = false,
-        },
-        new Broker
-        {
-            Name = "Nexer Xtended",
-            WebsiteUrl = "https://nexergroup.com/nexer-xtended/",
-            AssignmentPortalUrl = null,
-            LoginUrl = "https://nexergroup.com/nexer-xtended/",
-            ConnectorKey = GenericSelectorConnector.ConnectorKey,
-            SelectorConfigJson = null,
-            IsEnabled = false,
-        },
-        new Broker
-        {
-            Name = "Onsiter",
-            WebsiteUrl = "https://onsiter.com/",
-            AssignmentPortalUrl = null,
-            LoginUrl = "https://onsiter.com/",
-            ConnectorKey = GenericSelectorConnector.ConnectorKey,
-            SelectorConfigJson = null,
-            IsEnabled = false,
-        },
-        new Broker
-        {
-            Name = "Mercell (offentlig upphandling)",
-            WebsiteUrl = "https://www.mercell.com/sv-se/",
-            AssignmentPortalUrl = null,
-            LoginUrl = "https://app.mercell.com/",
-            ConnectorKey = GenericSelectorConnector.ConnectorKey,
-            SelectorConfigJson = null,
-            IsEnabled = false,
-        },
-        new Broker
-        {
-            Name = "e-Avrop (offentlig upphandling)",
-            WebsiteUrl = "https://www.e-avrop.com/",
-            AssignmentPortalUrl = null,
-            LoginUrl = "https://www.e-avrop.com/Login.aspx",
-            ConnectorKey = GenericSelectorConnector.ConnectorKey,
-            SelectorConfigJson = null,
-            IsEnabled = false,
-        },
+        LoginGatedCandidate("Verama", "https://www.verama.com/", "https://www.verama.com/login"),
+        LoginGatedCandidate("Nexer Xtended", "https://nexergroup.com/nexer-xtended/", "https://nexergroup.com/nexer-xtended/"),
+        LoginGatedCandidate("Onsiter", "https://onsiter.com/", "https://onsiter.com/"),
+        LoginGatedCandidate("Mercell (offentlig upphandling)", "https://www.mercell.com/sv-se/", "https://app.mercell.com/"),
+        LoginGatedCandidate("e-Avrop (offentlig upphandling)", "https://www.e-avrop.com/", "https://www.e-avrop.com/Login.aspx"),
     ];
+
+    /// <summary>
+    /// A broker whose listing requires login, with no connector yet able to use credentials for it
+    /// (see the comment above). Always seeded disabled with GenericSelectorConnector/no selector
+    /// config, since that's a placeholder until someone writes a real Playwright connector for it.
+    /// </summary>
+    private static Broker LoginGatedCandidate(string name, string websiteUrl, string loginUrl) => new()
+    {
+        Name = name,
+        WebsiteUrl = websiteUrl,
+        AssignmentPortalUrl = null,
+        LoginUrl = loginUrl,
+        ConnectorKey = GenericSelectorConnector.ConnectorKey,
+        SelectorConfigJson = null,
+        IsEnabled = false,
+    };
 
     public async Task SeedAsync()
     {
-        var existingNames = await db.Brokers.Select(b => b.Name).ToListAsync();
+        var existingNames = (await db.Brokers.Select(b => b.Name).ToListAsync()).ToHashSet();
 
         foreach (var broker in SeedBrokers)
         {

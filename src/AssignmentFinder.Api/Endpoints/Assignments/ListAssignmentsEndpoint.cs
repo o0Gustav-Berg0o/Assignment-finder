@@ -1,3 +1,4 @@
+using AssignmentFinder.Api.Shared;
 using AssignmentFinder.Infrastructure.Data;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -27,20 +28,7 @@ public class ListAssignmentsEndpoint(AppDbContext db) : Endpoint<ListAssignments
             .Where(i => i.UserId == userId)
             .Select(i => i.AssignmentId);
 
-        var query = db.Assignments.AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(req.Query))
-        {
-            query = query.Where(a =>
-                a.Title.Contains(req.Query) ||
-                (a.Description != null && a.Description.Contains(req.Query)) ||
-                (a.Skills != null && a.Skills.Contains(req.Query)));
-        }
-
-        if (!string.IsNullOrWhiteSpace(req.Area))
-        {
-            query = query.Where(a => a.Area != null && a.Area.Contains(req.Area));
-        }
+        var query = db.Assignments.AsQueryable().ApplyTextSearch(req.Query, req.Area);
 
         if (req.BrokerId.HasValue)
         {

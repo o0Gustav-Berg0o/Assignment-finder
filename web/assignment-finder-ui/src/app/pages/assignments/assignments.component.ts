@@ -39,6 +39,11 @@ export class AssignmentsComponent implements OnInit {
         pageSize: this.pageSize,
       })
       .subscribe((page) => {
+        if (page.items.length === 0 && page.totalCount > 0 && this.page() > 1) {
+          this.page.set(Math.max(1, Math.ceil(page.totalCount / this.pageSize)));
+          this.refresh();
+          return;
+        }
         this.assignments.set(page.items);
         this.totalCount.set(page.totalCount);
       });
