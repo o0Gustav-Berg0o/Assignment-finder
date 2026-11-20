@@ -89,9 +89,16 @@
             </ng-container>
           </ng-container>
         </td>
-        <td [title]="b.lastScanError ?? ''">
+        <td>
           <span class="badge badge-success" *ngIf="b.lastScanSucceeded === true">OK</span>
-          <span class="badge badge-danger" *ngIf="b.lastScanSucceeded === false">Failing</span>
+          <span
+            class="badge badge-danger tooltip-trigger"
+            tabindex="0"
+            *ngIf="b.lastScanSucceeded === false"
+          >
+            Failing
+            <span class="tooltip-content">{{ b.lastScanError || 'No error message recorded.' }}</span>
+          </span>
           <span class="badge badge-neutral" *ngIf="b.lastScanSucceeded === null">Not scanned</span>
         </td>
         <td>{{ b.lastScrapedAt ? (b.lastScrapedAt | date: 'short') : 'never' }}</td>
