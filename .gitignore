@@ -11,6 +11,10 @@ dist/
 # Env
 .env
 
+# Generated seed-data exports contain decrypted-at-rest secrets (encrypted broker
+# passwords + the Data Protection key that decrypts them) - never commit these.
+seed-data/*.sql
+
 # Editor
 .vs/
 .idea/
