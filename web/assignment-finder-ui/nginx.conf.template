@@ -5,7 +5,9 @@ server {
     index index.html;
 
     location /api/ {
-        proxy_pass http://api:8080/api/;
+        # API_INTERNAL_HOST defaults to the docker-compose service name; in Azure Container Apps,
+        # set it to the api app's internal FQDN within the same Container Apps Environment.
+        proxy_pass http://${API_INTERNAL_HOST}/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
