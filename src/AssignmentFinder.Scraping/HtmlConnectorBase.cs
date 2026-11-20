@@ -22,7 +22,7 @@ public abstract class HtmlConnectorBase(IHttpClientFactory httpClientFactory) : 
     protected static Task<IDocument> ParseHtmlAsync(string html, CancellationToken ct) =>
         browsingContext.OpenAsync(req => req.Content(html), ct);
 
-    public virtual async Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, CancellationToken ct)
+    public virtual async Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, string? decryptedPassword, CancellationToken ct)
     {
         var listingUrl = broker.AssignmentPortalUrl ?? broker.WebsiteUrl;
         var html = await httpClient.GetStringAsync(listingUrl, ct);

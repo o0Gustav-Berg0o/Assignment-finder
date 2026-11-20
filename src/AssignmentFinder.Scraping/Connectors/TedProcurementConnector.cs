@@ -26,7 +26,7 @@ public class TedProcurementConnector(IHttpClientFactory httpClientFactory) : IAs
     // "SWE"/"ENG" under links.html) - case-insensitive matching avoids needing two DTO shapes.
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-    public async Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, CancellationToken ct)
+    public async Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, string? decryptedPassword, CancellationToken ct)
     {
         var requestBody = new
         {

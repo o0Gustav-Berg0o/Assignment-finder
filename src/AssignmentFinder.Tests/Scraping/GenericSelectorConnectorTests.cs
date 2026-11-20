@@ -54,7 +54,7 @@ public class GenericSelectorConnectorTests
         var connector = new GenericSelectorConnector(MakeFakeHttpClientFactory(SampleHtml));
         var broker = MakeBroker();
 
-        var results = await connector.FetchAsync(broker, CancellationToken.None);
+        var results = await connector.FetchAsync(broker, decryptedPassword: null, CancellationToken.None);
 
         Assert.Equal(2, results.Count);
 

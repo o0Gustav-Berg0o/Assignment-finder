@@ -17,9 +17,9 @@ public class GenericSelectorConnector(IHttpClientFactory httpClientFactory) : Ht
 
     public override string Key => ConnectorKey;
 
-    public override async Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, CancellationToken ct)
+    public override async Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, string? decryptedPassword, CancellationToken ct)
     {
-        var listResults = await base.FetchAsync(broker, ct);
+        var listResults = await base.FetchAsync(broker, decryptedPassword, ct);
 
         var config = GetConfig(broker);
         if (!config.FetchDetailPage ||

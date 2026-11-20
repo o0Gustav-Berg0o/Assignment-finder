@@ -16,6 +16,7 @@ public class ScanPipeline(
     AppDbContext db,
     IEnumerable<IAssignmentConnector> connectors,
     MatchingService matchingService,
+    BrokerCredentialProtector credentialProtector,
     ILogger<ScanPipeline> logger)
 {
     public async Task<ScanResult> RunAsync(CancellationToken ct)
@@ -48,10 +49,14 @@ public class ScanPipeline(
             return [];
         }
 
+        var decryptedPassword = broker.LoginPasswordEncrypted is { } encrypted
+            ? credentialProtector.Decrypt(encrypted)
+            : null;
+
         IReadOnlyList<ScrapedAssignment> scraped;
         try
         {
-            scraped = await connector.FetchAsync(broker, ct);
+            scraped = await connector.FetchAsync(broker, decryptedPassword, ct);
             broker.LastScanSucceeded = true;
             broker.LastScanError = null;
         }

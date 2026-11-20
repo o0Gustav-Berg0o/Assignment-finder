@@ -27,6 +27,13 @@ public class ScanNowEndpoint(AppDbContext db, ScanPipeline pipeline) : Endpoint<
             return;
         }
 
+        if (!broker.IsEnabled)
+        {
+            AddError("Broker is disabled; enable it before scanning.");
+            ThrowIfAnyErrors();
+            return;
+        }
+
         var newIds = await pipeline.ScanBrokerAsync(broker, ct);
         var matchCount = await pipeline.MatchAsync(newIds, ct);
 

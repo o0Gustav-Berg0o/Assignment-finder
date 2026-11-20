@@ -9,6 +9,12 @@ namespace AssignmentFinder.Scraping.Connectors;
 /// ReadySelector/Parse at the target site's real markup (inspect it in a browser first), then
 /// add a Broker row with ConnectorKey = this class's Key.
 ///
+/// If the listing requires login (Broker.LoginUrl/LoginUsername/LoginPassword, e.g. Verama,
+/// Onsiter, Nexer Xtended, Mercell, e-Avrop), also override LoginConfig with that site's real
+/// login-form selectors - PlaywrightConnectorBase logs in before navigating to the listing.
+/// The generic-selector connector (plain HTTP, no JS) can never do this; a login-gated broker
+/// needs its own class like this one.
+///
 /// Disabled by default: the selectors below are illustrative placeholders, not verified against
 /// a live site. Verify and adjust before enabling the corresponding Broker.
 /// </summary>

@@ -14,5 +14,11 @@ public interface IAssignmentConnector
     /// <summary>Stable identifier matching Broker.ConnectorKey, e.g. "generic-selector" or "acme-broker".</summary>
     string Key { get; }
 
-    Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, CancellationToken ct);
+    /// <summary>
+    /// Fetches the broker's current assignment list. <paramref name="decryptedPassword"/> is the
+    /// plaintext form of Broker.LoginPasswordEncrypted (decrypted by the caller, which holds the
+    /// protector - Scraping has no dependency on Infrastructure), or null if the broker has no
+    /// stored password. Connectors that don't need login (most of them) simply ignore it.
+    /// </summary>
+    Task<IReadOnlyList<ScrapedAssignment>> FetchAsync(Broker broker, string? decryptedPassword, CancellationToken ct);
 }

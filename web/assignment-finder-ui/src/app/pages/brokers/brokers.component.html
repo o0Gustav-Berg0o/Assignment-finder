@@ -94,10 +94,15 @@
           <span
             class="badge badge-danger tooltip-trigger"
             tabindex="0"
+            role="button"
+            [attr.aria-describedby]="'scan-error-' + b.id"
+            [title]="b.lastScanError || 'No error message recorded.'"
             *ngIf="b.lastScanSucceeded === false"
           >
             Failing
-            <span class="tooltip-content">{{ b.lastScanError || 'No error message recorded.' }}</span>
+            <span class="tooltip-content" [id]="'scan-error-' + b.id" role="tooltip">{{
+              b.lastScanError || 'No error message recorded.'
+            }}</span>
           </span>
           <span class="badge badge-neutral" *ngIf="b.lastScanSucceeded === null">Not scanned</span>
         </td>
@@ -107,7 +112,11 @@
           <input type="checkbox" [checked]="b.isEnabled" (change)="toggleEnabled(b)" />
         </td>
         <td>
-          <button [disabled]="scanningId() === b.id" (click)="scanNow(b)">
+          <button
+            [disabled]="scanningId() === b.id || !b.isEnabled"
+            [title]="!b.isEnabled ? 'Enable this broker first' : ''"
+            (click)="scanNow(b)"
+          >
             {{ scanningId() === b.id ? 'Scanning...' : 'Scan now' }}
           </button>
           <button (click)="startEdit(b)">Edit</button>

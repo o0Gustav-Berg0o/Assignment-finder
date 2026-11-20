@@ -56,9 +56,12 @@ public class BrokerSeeder(AppDbContext db)
         },
 
         // Login-gated candidates: assignment listings require a registered account, so these
-        // start disabled with no selector config. An admin can set LoginUrl/credentials via the
-        // Brokers page's quick-login link, inspect the logged-in listing page, then fill in
-        // SelectorConfigJson and enable the broker.
+        // start disabled. An admin can set LoginUrl/credentials via the Brokers page's quick-login
+        // link to inspect the logged-in listing page - but GenericSelectorConnector (plain HTTP, no
+        // JS, no login) can never actually use those credentials. Enabling one of these for real
+        // scraping means writing a bespoke Playwright connector for it (copy ExampleSpaBrokerConnector,
+        // which now supports a LoginConfig step) with real selectors verified against the live
+        // logged-in page, then pointing ConnectorKey at that new class.
         new Broker
         {
             Name = "Verama",
