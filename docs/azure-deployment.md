@@ -9,17 +9,32 @@ cost. It assumes you (not an agent) run the `az` commands — nothing here execu
 |---|---|
 | `db` (SQL Server container) | **Azure SQL Database, Serverless** (General Purpose, Gen5, 0.5 vCore min, auto-pause after 60 min idle) |
 | `api` container | **Container App**, 0.25 vCPU / 0.5 GiB, min replicas **0** (scales to zero between requests) |
-| `worker` container | **Container App**, 0.25 vCPU / 0.5 GiB, min replicas **1** (see below) |
+| `worker` container | **Azure Function (Consumption plan), Timer trigger** — recommended over an always-on Container App; see below |
 | `web` container | **Container App**, 0.25 vCPU / 0.5 GiB, min replicas **0**, external ingress (the public entry point) |
 | local image builds | **ghcr.io** (GitHub Container Registry, free) via `.github/workflows/build-and-push.yml` |
 
-**Why `worker` can't scale to zero (yet):** it runs its own in-process Quartz cron
-(`Scan__CronSchedule`, every 3 hours by default) rather than being woken up externally, so a
-Container App with min replicas 0 would never fire it. The clean fix is converting it to an
-**Azure Container Apps Job with a Cron trigger** instead of an always-on service — a real code
-change (swap the hosted Quartz scheduler for a "run once and exit" entrypoint), so it's left as a
-follow-up optimization, not part of this first migration. Until then, `worker` is the single
-biggest cost lever.
+**Why `worker` isn't a Container App:** it runs its own in-process Quartz cron
+(`Scan__CronSchedule`, every 3 hours by default) rather than being woken up externally, so an
+always-on Container App is the only way to run it as-is (~$12-15/mo, since min replicas 0 would
+never fire it). The actually-cheapest option is an **Azure Function on the Consumption plan**
+with a `TimerTrigger` matching the cron schedule: Consumption gives 1M free executions + 400,000
+GB-s/month, and running a few-minutes scan every 3 hours (~240 runs/month) stays comfortably
+inside that free grant — realistically **$0/month** for the worker, instead of ~$12-15/mo for an
+always-on Container App or a Container Apps Job (which bills per-run, cheaper than always-on but
+not free).
+
+This needs the same code change either way: swap the Worker's hosted Quartz scheduler for a
+single triggered entrypoint (`TimerTrigger` for Functions, Cron trigger for a Container Apps Job).
+**One real constraint with Functions Consumption:** it's a sandboxed environment with no control
+over OS-level dependencies, so Playwright/headless Chromium won't reliably run there (that needs
+Premium/Elastic Premium or a custom container). None of the 3 currently-enabled brokers
+(Brainville, Cinode Market, TED) use Playwright, so this doesn't block today's setup — it would
+only matter if a future login-gated SPA connector (the `PlaywrightConnectorBase.LoginConfig`
+mechanism added this session) gets enabled; that broker would need a different hosting plan.
+
+This refactor (and the Functions project it implies) is **not yet done** — this doc records the
+recommendation for when it's picked up. Until then, deploy `worker` as an always-on Container App
+per the steps below.
 
 **Networking:** `web`'s nginx proxies `/api/` to the `api` app. Locally this is
 `http://api:8080` (docker-compose's internal DNS); in Container Apps it's `api`'s internal FQDN
@@ -33,11 +48,12 @@ for a different target.
 | Item | Estimate |
 |---|---|
 | Azure SQL Database Serverless (0.5 vCore min, ~5 GB storage) | ~$5–15/mo |
-| `worker` Container App (always-on) | ~$12–15/mo |
+| `worker` as always-on Container App (current plan below) | ~$12–15/mo |
+| `worker` as Azure Function, Consumption plan (recommended, not yet implemented) | ~$0/mo |
 | `api` + `web` Container Apps (scale-to-zero) | ~$0–5/mo combined (mostly inside the free monthly grant) |
 | Container Apps Environment | $0 |
 | ghcr.io | $0 |
-| **Total** | **~$20–30/month** |
+| **Total** | **~$20–30/month now, ~$5–20/month once `worker` moves to Functions** |
 
 ## Steps
 
@@ -170,9 +186,27 @@ az containerapp update --name web --resource-group assignment-finder --set-env-v
   the new Azure SQL database, and that migrated Data Protection keys correctly decrypt the broker
   passwords).
 
-## Follow-up optimization (not done here)
+## Follow-up optimization (not done here): move `worker` to Azure Functions
 
-Convert `worker` from an always-on Container App to a **Container Apps Job** with a Cron trigger
-matching `Scan__CronSchedule`, removing the in-process Quartz scheduler in favor of Azure's own
-trigger. This is the single biggest remaining cost lever (~$12–15/mo) but requires a Worker code
-change (a "run once and exit" mode), so it's deliberately out of scope for this first migration.
+Recommended: convert `worker` from an always-on Container App to an **Azure Function
+(Consumption plan)** with a `TimerTrigger` matching `Scan__CronSchedule`, removing the in-process
+Quartz scheduler in favor of Azure's own trigger. This is the single biggest remaining cost lever
+(~$12–15/mo → ~$0/mo) but requires a Worker code change:
+
+- New/repurposed project using the .NET isolated worker Functions model
+  (`FunctionsApplication.CreateBuilder(args)`), registering the same DI services
+  (`AppDbContext`, `ScanPipeline`, connectors, `BrokerCredentialProtector`) the Worker already
+  wires up today.
+- Replace the hosted Quartz scheduler with one `[Function("ScanTimer")]` method using
+  `[TimerTrigger("0 0 */3 * * *")]` (NCRONTAB, 6-field like Quartz's own cron but not identical
+  syntax — double-check the translation) that calls `scanPipeline.RunAsync(ct)` once per
+  invocation.
+- **Constraint to accept:** Functions Consumption can't run Playwright/headless Chromium (no
+  control over OS dependencies; needs Premium/Elastic Premium or a custom container for that).
+  Fine today since no enabled broker uses `PlaywrightConnectorBase` — would need revisiting if a
+  login-gated SPA connector (Verama/Onsiter/etc., using the `LoginConfig` mechanism added this
+  session) is ever enabled.
+
+(Alternative, not recommended: a **Container Apps Job** with a Cron trigger — same code-shape
+change, but bills per-run instead of being free, so cheaper than always-on but not free like
+Functions Consumption.)
